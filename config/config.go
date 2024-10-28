@@ -34,6 +34,6 @@ func GetConfig() {
 		Port:            port,
 		TbankApiUrl:     TbankApiUrl,
 		NotificationURL: NotificationURL,
-		CrmApiUrl: CrmApiUrl,
+		CrmApiUrl:       CrmApiUrl,
 	}
 }

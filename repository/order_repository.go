@@ -48,8 +48,9 @@ func GetPaymentByTbankPaymentId(paymentId string) models.TbankOrder {
 }
 
 func PaymentStatusDone(tbankPaymentId int) error {
+	paymentId := strconv.Itoa(tbankPaymentId)
 	var order models.TbankOrder
-	postgres.DB.Where("tbank_payment_id = ?", tbankPaymentId).First(&order)
+	postgres.DB.Where("tbank_payment_id = ?", paymentId).First(&order)
 	if err := postgres.DB.Exec("UPDATE payments SET status = true WHERE id = ?", order.PaymentId).Error; err != nil {
 		return err
 	}
