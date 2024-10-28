@@ -157,7 +157,7 @@ func CheckIsLoggedHandler(c *fiber.Ctx) error {
 
 	inviteToken, err := utils.GetIviteTokenByUserToken(userToken)
 	if err != nil {
-		return c.Status(fiber.StatusNotFound).SendString("Token not found")
+		return c.JSON(fiber.Map{"is_registered": false})
 	}
 
 	user := repository.GetUser(inviteToken)

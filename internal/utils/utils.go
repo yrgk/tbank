@@ -62,7 +62,7 @@ func GetIviteTokenByUserToken(userToken string) (string, error) {
 
 	var result models.InviteTokenResponse
 	if err := json.Unmarshal(body, &result); err != nil {
-		fmt.Println("Can not unmarshal JSON")
+		return "", errors.New("bad request")
 	}
 
 	return result.InviteToken, nil
