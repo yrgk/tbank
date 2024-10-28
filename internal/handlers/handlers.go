@@ -143,12 +143,15 @@ func GetPaymentURLHandler(c *fiber.Ctx) error {
 
 	inviteToken, err := utils.GetIviteTokenByUserToken(userToken)
 	if err != nil {
-		return c.SendStatus(fiber.StatusBadRequest)
+		return c.SendStatus(fiber.StatusForbidden)
 	}
 
 	paymentURL := repository.GetPaymentUrlByPaymentId(id, inviteToken)
+	if paymentURL != "" {
+		return c.JSON(fiber.Map{"payment_url": paymentURL})
+	}
 
-	return c.JSON(fiber.Map{"payment_url": paymentURL})
+	return c.SendStatus(fiber.StatusNotFound)
 }
 
 // Checking if user is logged
