@@ -1,7 +1,6 @@
 package models
 
 type (
-
 	ReceiptData struct {
 		FfdVersion string
 		Taxation   string
@@ -19,9 +18,9 @@ type (
 	}
 	Item struct {
 		Name            string
-		Price           int
+		Price           float32
 		Quantity        int
-		Amount          int
+		Amount          float32
 		Tax             string
 		PaymentMethod   string
 		PaymentObject   string
@@ -30,10 +29,11 @@ type (
 
 	CreatePaymentRequest struct {
 		// Для создания ссылки на оплату
-		Amount      int
+		Amount      float32
 		Description string
 		UserToken   string
 		PaymentId   int
+		DocsSalesId int
 		// Для выдачи чеков
 		FfdVersion string
 		Email      string

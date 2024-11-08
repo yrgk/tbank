@@ -17,6 +17,7 @@ type (
 		Description    string
 		InviteToken    string
 		PaymentId      int
+		DocsSalesId    int
 		TbankPaymentId string
 		PaymentURL     string
 	}

@@ -54,11 +54,14 @@ func CreatePaymentHandler(c *fiber.Ctx) error {
 		return c.SendStatus(fiber.StatusBadRequest)
 	}
 
+	amount := int(body.Amount * 100)
+
 	newOrder := models.TbankOrder{
-		Amount:      body.Amount,
+		Amount:      amount,
 		Description: body.Description,
 		InviteToken: inviteToken,
 		PaymentId:   body.PaymentId,
+		DocsSalesId: body.DocsSalesId,
 	}
 
 	if err := repository.CreateOrder(newOrder); err != nil {
@@ -70,10 +73,14 @@ func CreatePaymentHandler(c *fiber.Ctx) error {
 	tokenPayload := models.CreateTokenRequest{
 		Id:          order.Id,
 		TerminalKey: order.TerminalKey,
-		Amount:      order.Amount,
+		Amount:      amount,
 		Description: order.Description,
 		Password:    order.Password,
 	}
+
+	utils.ModifyItems(&body.Items)
+
+	// fmt.Println(body.Items[0].Price, body.Items[0].Amount)
 
 	token := fmt.Sprintf("%x", utils.MakeToken(tokenPayload))
 
@@ -94,6 +101,7 @@ func CreatePaymentHandler(c *fiber.Ctx) error {
 		Token:       token,
 		Receipt:     receiptData,
 	}
+	fmt.Println(tbankRequestBody)
 
 	marshalled, err := json.Marshal(tbankRequestBody)
 	if err != nil {
@@ -138,17 +146,40 @@ func PaymentStatusDoneHandler(c *fiber.Ctx) error {
 
 // Getting payment url by payment id
 func GetPaymentURLHandler(c *fiber.Ctx) error {
-	id := c.QueryInt("payment_id")
+	paymentId := c.QueryInt("payment_id")
+	docsSalesId := c.QueryInt("docs_sales_id")
 	userToken := c.Query("token")
+
+	// return c.JSON(paymentId)
 
 	inviteToken, err := utils.GetIviteTokenByUserToken(userToken)
 	if err != nil {
 		return c.SendStatus(fiber.StatusForbidden)
 	}
 
-	paymentURL := repository.GetPaymentUrlByPaymentId(id, inviteToken)
-	if paymentURL != "" {
-		return c.JSON(fiber.Map{"payment_url": paymentURL})
+	if paymentId == 0 && docsSalesId == 0 {
+		return c.SendStatus(fiber.StatusNotFound)
+	}
+
+	if paymentId == 0 && docsSalesId != 0 {
+		paymentURL := repository.GetPaymentUrlByDocsSalesId(docsSalesId, inviteToken)
+		if paymentURL != "" {
+			return c.JSON(fiber.Map{"payment_url": paymentURL})
+		}
+	}
+
+	if paymentId != 0 && docsSalesId == 0 {
+		paymentURL := repository.GetPaymentUrlByPaymentId(paymentId, inviteToken)
+		if paymentURL != "" {
+			return c.JSON(fiber.Map{"payment_url": paymentURL})
+		}
+	}
+
+	if paymentId != 0 && docsSalesId != 0 {
+		paymentURL := repository.GetPaymentUrlByPaymentId(paymentId, inviteToken)
+		if paymentURL != "" {
+			return c.JSON(fiber.Map{"payment_url": paymentURL})
+		}
 	}
 
 	return c.SendStatus(fiber.StatusNotFound)

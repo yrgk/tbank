@@ -46,6 +46,13 @@ func GetPaymentById(id int, token string) []byte {
 	return body
 }
 
+func ModifyItems(items *[]models.Item) {
+	for i := range *items {
+		(*items)[i].Price *= 100
+		(*items)[i].Amount *= 100
+	}
+}
+
 func GetIviteTokenByUserToken(userToken string) (string, error) {
 	url := fmt.Sprintf("%s/api/v1/cashboxes_meta/?token=%s", config.Config.CrmApiUrl, userToken)
 
