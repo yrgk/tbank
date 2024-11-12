@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"time"
 
 	"fmt"
 	"payment-microservice/config"
@@ -70,17 +71,18 @@ func CreatePaymentHandler(c *fiber.Ctx) error {
 
 	order := repository.GetDataForPayment(body.PaymentId, inviteToken)
 
+	expiration := time.Now().AddDate(0, 0, 90).Format("2006-01-02T15:04:05-07:00")
+
 	tokenPayload := models.CreateTokenRequest{
 		Id:          order.Id,
 		TerminalKey: order.TerminalKey,
 		Amount:      amount,
 		Description: order.Description,
 		Password:    order.Password,
+		RedirectDueDate: expiration,
 	}
 
 	utils.ModifyItems(&body.Items)
-
-	// fmt.Println(body.Items[0].Price, body.Items[0].Amount)
 
 	token := fmt.Sprintf("%x", utils.MakeToken(tokenPayload))
 
@@ -94,12 +96,13 @@ func CreatePaymentHandler(c *fiber.Ctx) error {
 	}
 
 	tbankRequestBody := models.CreatePaymentPayload{
-		TerminalKey: order.TerminalKey,
-		Amount:      order.Amount,
-		OrderId:     orderId,
-		Description: order.Description,
-		Token:       token,
-		Receipt:     receiptData,
+		TerminalKey:     order.TerminalKey,
+		Amount:          order.Amount,
+		OrderId:         orderId,
+		Description:     order.Description,
+		RedirectDueDate: expiration,
+		Token:           token,
+		Receipt:         receiptData,
 	}
 	fmt.Println(tbankRequestBody)
 
@@ -149,8 +152,6 @@ func GetPaymentURLHandler(c *fiber.Ctx) error {
 	paymentId := c.QueryInt("payment_id")
 	docsSalesId := c.QueryInt("docs_sales_id")
 	userToken := c.Query("token")
-
-	// return c.JSON(paymentId)
 
 	inviteToken, err := utils.GetIviteTokenByUserToken(userToken)
 	if err != nil {

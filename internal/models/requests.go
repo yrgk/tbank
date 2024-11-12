@@ -9,12 +9,13 @@ type (
 	}
 
 	CreatePaymentPayload struct {
-		OrderId     string
-		TerminalKey string
-		Amount      int
-		Description string
-		Token       string
-		Receipt     ReceiptData
+		OrderId         string
+		TerminalKey     string
+		Amount          int
+		Description     string
+		RedirectDueDate string
+		Token           string
+		Receipt         ReceiptData
 	}
 	Item struct {
 		Name            string
@@ -42,11 +43,12 @@ type (
 	}
 
 	CreateTokenRequest struct {
-		Id          int
-		TerminalKey string
-		Amount      int
-		Description string
-		Password    string
+		Id              int
+		TerminalKey     string
+		Amount          int
+		Description     string
+		Password        string
+		RedirectDueDate string
 	}
 
 	CreateAccountRequest struct {

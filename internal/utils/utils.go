@@ -17,7 +17,7 @@ func MakeToken(body models.CreateTokenRequest) [32]byte {
 	orderId := strconv.Itoa(body.Id)
 	amount := fmt.Sprintf("%d", body.Amount)
 
-	strings := []string{amount, body.Description, orderId, body.Password, body.TerminalKey}
+	strings := []string{amount, body.Description, orderId, body.Password, body.RedirectDueDate, body.TerminalKey}
 
 	var bs string
 

@@ -37,9 +37,9 @@ func GetPaymentUrlByPaymentId(paymentId int, inviteToken string) string {
 	return order.PaymentURL
 }
 
-func GetPaymentUrlByDocsSalesId(paymentId int, inviteToken string) string {
+func GetPaymentUrlByDocsSalesId(docsSalesId int, inviteToken string) string {
 	var order models.TbankOrder
-	postgres.DB.Where("docs_sales_id = ?", paymentId).Where("invite_token = ?", inviteToken).First(&order)
+	postgres.DB.Where("docs_sales_id = ?", docsSalesId).Where("invite_token = ?", inviteToken).First(&order)
 
 	return order.PaymentURL
 }
